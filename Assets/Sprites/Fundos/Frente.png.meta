@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9a544e95ec76bc84fb5263d3ef7c2fdf
+guid: 3d74f489f95caab458c6bdd149792675
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8100587257519533313
-    second: TesteDoCenario2_0
+      213: -2866136404725950043
+    second: Primeira Cena Finalizada_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -139,7 +139,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: TesteDoCenario2_0
+      name: Primeira Cena Finalizada_0
       rect:
         serializedVersion: 2
         x: 0
@@ -154,8 +154,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: 10de18421311b6070800000000000000
-      internalID: 8100587257519533313
+      spriteID: 5a99e7610207938d0800000000000000
+      internalID: -2866136404725950043
       vertices: []
       indices: 
       edges: []
@@ -174,7 +174,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      TesteDoCenario2_0: 8100587257519533313
+      Primeira Cena Finalizada_0: -2866136404725950043
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

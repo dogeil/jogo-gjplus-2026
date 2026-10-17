@@ -1,53 +1,124 @@
 using UnityEngine;
-using UnityEngine.EventSystems; // Required for Pointer Events
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.UI;
 
 [RequireComponent(typeof(Collider2D))]
 public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     private Camera _mainCamera;
+    private RoomView _room;
+    private Rigidbody2D _rb;
+    private float _defaultGravity;
     private Vector3 _dragOffset;
+    private Vector2 _lastPointerPos;
+    private bool _dragging;
 
     private void Awake()
     {
         _mainCamera = Camera.main;
+        _room = FindFirstObjectByType<RoomView>();
+        _rb = GetComponent<Rigidbody2D>();
+        if (_rb != null) _defaultGravity = _rb.gravityScale;
 
-        // Ensure we have an EventSystem in the scene, otherwise dragging won't trigger
         if (FindFirstObjectByType<EventSystem>() == null)
         {
-            GameObject eventSystem = new GameObject("EventSystem", typeof(EventSystem), typeof(StandaloneInputModule));
+            new GameObject("EventSystem", typeof(EventSystem), typeof(InputSystemUIInputModule));
             Debug.Log("Created a missing EventSystem automatically!");
+        }
+
+        if (_mainCamera != null && _mainCamera.GetComponent<Physics2DRaycaster>() == null)
+            _mainCamera.gameObject.AddComponent<Physics2DRaycaster>();
+    }
+
+    private void Start()
+    {
+        // Itens colocados no editor ou carregados pelo RoomItems já ficam com a gravidade certa
+        UpdateGravity();
+    }
+
+    public void OnBeginDrag(PointerEventData eventData)
+    {
+        _dragging = true;
+        _lastPointerPos = eventData.position;
+
+        transform.SetParent(null, true);
+        _dragOffset = transform.position - GetMouseWorldPosition(_lastPointerPos);
+
+        if (_rb != null)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
+            _rb.simulated = false;
         }
     }
 
-    // 1. Triggers the moment you click down and start moving the mouse
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        Vector3 mouseWorldPos = GetMouseWorldPosition(eventData.position);
-        _dragOffset = transform.position - mouseWorldPos;
-    }
-
-    // 2. Triggers continuously while you move the mouse
     public void OnDrag(PointerEventData eventData)
     {
-        Vector3 mouseWorldPos = GetMouseWorldPosition(eventData.position);
-        transform.position = mouseWorldPos + _dragOffset;
+        _lastPointerPos = eventData.position;
     }
 
-    // 3. Triggers when you let go of the mouse button
-    public void OnEndDrag(PointerEventData eventData)
+    public virtual void OnEndDrag(PointerEventData eventData)
     {
-        // Put any drop logic here (like snapping to a grid slot)
-        Debug.Log("Object dropped!");
+        _dragging = false;
+        _lastPointerPos = eventData.position;
+        transform.position = GetMouseWorldPosition(_lastPointerPos) + _dragOffset;
+
+        if (_room != null) _room.AttachToWall(transform);
+
+        UpdateGravity();
+
+        if (_rb != null)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
+            _rb.simulated = true;
+        }
+    }
+
+    /// Sem gravidade no chão/teto, gravidade original nas paredes.
+    public void UpdateGravity()
+    {
+        if (_rb == null || _room == null) return;
+
+        bool onFloor = _room.IsFloor(transform.parent);
+        _rb.gravityScale = onFloor ? 0f : _defaultGravity;
+
+        if (onFloor)
+        {
+            _rb.linearVelocity = Vector2.zero;
+            _rb.angularVelocity = 0f;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (!_dragging)
+        {
+            // Caiu da parede/teto -> aparece em ponto aleatório do chão
+            if (_room != null && _room.FellOffSurface(transform))
+            {
+                _room.DropOnFloor(transform);
+                if (_rb != null)
+                {
+                    _rb.linearVelocity = Vector2.zero;
+                    _rb.angularVelocity = 0f;
+                }
+                UpdateGravity();
+            }
+            return;
+        }
+
+        if (Mouse.current != null)
+            _lastPointerPos = Mouse.current.position.ReadValue();
+
+        transform.position = GetMouseWorldPosition(_lastPointerPos) + _dragOffset;
     }
 
     private Vector3 GetMouseWorldPosition(Vector2 screenPosition)
     {
-        // Convert screen pixel position to Unity 2D World units
-        Vector3 worldPos = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0));
-        
-        // Keep the sprite's original Z depth so it doesn't disappear
-        worldPos.z = transform.position.z; 
-        
+        Vector3 worldPos = _mainCamera.ScreenToWorldPoint(new Vector3(screenPosition.x, screenPosition.y, 0f));
+        worldPos.z = transform.position.z;
         return worldPos;
     }
 }
