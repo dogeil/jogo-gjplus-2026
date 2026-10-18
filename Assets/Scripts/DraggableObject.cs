@@ -6,7 +6,9 @@ using UnityEngine.InputSystem.UI;
 [RequireComponent(typeof(Collider2D))]
 public class DraggableObject : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    private bool _held; // suspenso sem gravidade até o jogador tocar de novo
+    private const float SuspendTime = 2f; // s flutuando antes de cair
+    private bool _held; // suspenso sem gravidade até o jogador tocar, olhar pro lado ou passar SuspendTime
+    private float _heldUntil;
     private Camera _mainCamera;
     private RoomView _room;
     private Rigidbody2D _rb;
@@ -39,10 +41,11 @@ public class DraggableObject : MonoBehaviour, IPointerDownHandler, IBeginDragHan
         UpdateGravity();
     }
 
-    /// Fica sem gravidade (flutuando) até o próximo toque do jogador.
+    /// Fica sem gravidade (flutuando) até o próximo toque do jogador, ou cai sozinho após SuspendTime.
     public void Suspend()
     {
         _held = true;
+        _heldUntil = Time.time + SuspendTime;
         UpdateGravity();
     }
 
@@ -114,8 +117,8 @@ public class DraggableObject : MonoBehaviour, IPointerDownHandler, IBeginDragHan
 
     private void LateUpdate()
     {
-        // Jogador olhou pro lado: o martelo suspenso cai
-        if (_held && _room != null && _room.IsTurning)
+        // Jogador olhou pro lado ou acabou o tempo: o item suspenso cai
+        if (_held && ((_room != null && _room.IsTurning) || Time.time >= _heldUntil))
         {
             _held = false;
             UpdateGravity();

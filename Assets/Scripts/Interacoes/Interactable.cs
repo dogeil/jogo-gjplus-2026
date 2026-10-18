@@ -17,6 +17,9 @@ public abstract class Interactable : MonoBehaviour
 
     [SerializeField] protected Cost[] costs;
 
+    /// Algum minigame rodando (mesmo sem travar a sala). Outros objetos clicáveis, como a cortina, devem ignorar o mouse.
+    public static bool AnyBusy { get; private set; }
+
     protected RoomView room;
     bool busy;
 
@@ -24,6 +27,7 @@ public abstract class Interactable : MonoBehaviour
     protected virtual bool CanUse => true;
     protected abstract void OnSuccess();
     protected virtual void OnBegin() { } // minigame vai começar
+    protected virtual bool LockRoom => true; // false: o jogador pode olhar pro lado durante o minigame (ele decide se cancela)
 
     protected virtual void Awake()
     {
@@ -48,16 +52,16 @@ public abstract class Interactable : MonoBehaviour
 
     IEnumerator Run(DraggableObject tool)
     {
-        busy = true;
-        if (room != null) room.Locked = true;
+        busy = AnyBusy = true;
+        if (room != null && LockRoom) room.Locked = true;
         tool.gameObject.SetActive(false); // ferramenta em uso some até o fim
         bool ok = false;
         OnBegin();
         yield return Minigame(r => ok = r);
         tool.gameObject.SetActive(true);
         if (ok) tool.Suspend(); // venceu: fica no ar até tocar nele ou olhar pro lado; falhou: cai
-        if (room != null) room.Locked = false;
-        busy = false;
+        if (room != null && LockRoom) room.Locked = false;
+        busy = AnyBusy = false;
         if (ok) OnSuccess(); else OnFail();
     }
 

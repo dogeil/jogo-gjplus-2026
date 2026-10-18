@@ -10,6 +10,7 @@ public static class NailHammer
 {
     const float TargetSize = 90f;      // px do anel fixo
     const float StartScale = 3f;       // anel começa 3x maior
+    const float FirstStartScale = 6f;  // 1º anel começa bem mais longe, pro jogador entender o que fazer
     const float EndScale = 0.7f;       // passou daqui sem clique = falha
     const float Tolerance = 0.4f;      // janela: |escala - 1| <= isso (menor = mais difícil)
     const float BaseTime = 1.5f;       // s para fechar o 1º anel
@@ -17,7 +18,7 @@ public static class NailHammer
 
     static Sprite ring;
 
-    static Sprite Ring()
+    public static Sprite Ring()
     {
         if (ring != null) return ring;
         const int n = 128;
@@ -60,14 +61,16 @@ public static class NailHammer
         for (int i = 0; i < points.Length && ok; i++)
         {
             target.position = closing.position = cam.WorldToScreenPoint(points[i]);
-            float duration = BaseTime * Mathf.Pow(SpeedUp, i);
+            float start = i == 0 ? FirstStartScale : StartScale;
+            // mesma velocidade de fechamento, só que com mais caminho no 1º anel
+            float duration = BaseTime * Mathf.Pow(SpeedUp, i) * (start - EndScale) / (StartScale - EndScale);
             float t = 0f;
             bool driven = false;
 
             while (!driven && ok)
             {
                 t += Time.deltaTime;
-                float scale = Mathf.Lerp(StartScale, EndScale, t / duration);
+                float scale = Mathf.Lerp(start, EndScale, t / duration);
                 closing.localScale = Vector3.one * scale;
                 if (t >= duration) { ok = false; break; } // fechou sem clique
 

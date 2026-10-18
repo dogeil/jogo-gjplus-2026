@@ -28,6 +28,7 @@ public class Cortina : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
     {
         cam = Camera.main;
         col = GetComponent<Collider2D>();
+        foreach (var c in GetComponents<Collider2D>()) c.isTrigger = true; // só detecta o mouse, não empurra itens
         room = FindFirstObjectByType<RoomView>();
         var sr = GetComponentInChildren<SpriteRenderer>();
         if (sr != null) outline = SpriteOutline.Attach(sr);
@@ -63,16 +64,18 @@ public class Cortina : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
 
     public void OnBeginDrag(PointerEventData e)
     {
+        if (Interactable.AnyBusy || (room != null && room.Locked)) return; // minigame rodando: ignora
         dragging = true;
         rising = false;
         if (room != null) room.Locked = true; // arrastando: não dá pra olhar pros lados
         dragOffset = transform.localPosition.y - PointerLocalY(e);
     }
 
-    public void OnDrag(PointerEventData e) => SetY(PointerLocalY(e) + dragOffset);
+    public void OnDrag(PointerEventData e) { if (dragging) SetY(PointerLocalY(e) + dragOffset); }
 
     public void OnEndDrag(PointerEventData e)
     {
+        if (!dragging) return;
         dragging = false;
         if (room != null) room.Locked = false;
     }
