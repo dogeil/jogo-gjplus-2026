@@ -4,8 +4,9 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.UI;
 
 [RequireComponent(typeof(Collider2D))]
-public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+public class DraggableObject : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
+    private bool _held; // suspenso sem gravidade até o jogador tocar de novo
     private Camera _mainCamera;
     private RoomView _room;
     private Rigidbody2D _rb;
@@ -19,6 +20,7 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         _mainCamera = Camera.main;
         _room = FindFirstObjectByType<RoomView>();
         _rb = GetComponent<Rigidbody2D>();
+        if (!TryGetComponent<HoverOutline>(out _)) gameObject.AddComponent<HoverOutline>();
         if (_rb != null) _defaultGravity = _rb.gravityScale;
 
         if (FindFirstObjectByType<EventSystem>() == null)
@@ -37,8 +39,23 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         UpdateGravity();
     }
 
+    /// Fica sem gravidade (flutuando) até o próximo toque do jogador.
+    public void Suspend()
+    {
+        _held = true;
+        UpdateGravity();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        if (!_held) return;
+        _held = false;
+        UpdateGravity();
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
+        _held = false;
         _dragging = true;
         _lastPointerPos = eventData.position;
 
@@ -74,6 +91,10 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             _rb.angularVelocity = 0f;
             _rb.simulated = true;
         }
+
+        // Soltou em cima de algo interagível? Tenta usar esta ferramenta nele.
+        foreach (var col in Physics2D.OverlapPointAll(transform.position))
+            if (col.TryGetComponent(out Interactable it) && it.TryStart(this)) break;
     }
 
     /// Sem gravidade no chão/teto, gravidade original nas paredes.
@@ -81,10 +102,10 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     {
         if (_rb == null || _room == null) return;
 
-        bool onFloor = _room.IsFloor(transform.parent);
-        _rb.gravityScale = onFloor ? 0f : _defaultGravity;
+        bool noGravity = _held || _room.IsFloor(transform.parent);
+        _rb.gravityScale = noGravity ? 0f : _defaultGravity;
 
-        if (onFloor)
+        if (noGravity)
         {
             _rb.linearVelocity = Vector2.zero;
             _rb.angularVelocity = 0f;
@@ -93,6 +114,13 @@ public class DraggableObject : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
     private void LateUpdate()
     {
+        // Jogador olhou pro lado: o martelo suspenso cai
+        if (_held && _room != null && _room.IsTurning)
+        {
+            _held = false;
+            UpdateGravity();
+        }
+
         if (!_dragging)
         {
             // Caiu da parede/teto -> aparece em ponto aleatório do chão

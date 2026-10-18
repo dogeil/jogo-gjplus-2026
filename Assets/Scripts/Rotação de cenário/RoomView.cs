@@ -35,7 +35,9 @@ public class RoomView : MonoBehaviour
 
     public int CurrentWall { get; private set; }
     public ViewMode Mode { get; private set; } = ViewMode.Wall;
-    public bool IsTurning => busy;
+    public bool IsTurning => busy || Locked;
+    public bool IsMoving => busy; // câmera em giro/olhar de verdade (sem contar o Locked)
+    public bool Locked { get; set; } // true durante minigames: bloqueia giro e olhar cima/baixo
 
     public event Action<int> OnTurnStarted;          // parede de destino, antes de mover
     public event Action<int> OnWallChanged;          // parede atual, depois do giro
@@ -103,19 +105,19 @@ public class RoomView : MonoBehaviour
 
     // ---------- Controles ----------
 
-    public void TurnLeft()  { if (!busy && Mode == ViewMode.Wall) StartCoroutine(Turn(-1)); }
-    public void TurnRight() { if (!busy && Mode == ViewMode.Wall) StartCoroutine(Turn(+1)); }
+    public void TurnLeft()  { if (!IsTurning && Mode == ViewMode.Wall) StartCoroutine(Turn(-1)); }
+    public void TurnRight() { if (!IsTurning && Mode == ViewMode.Wall) StartCoroutine(Turn(+1)); }
 
     public void LookUp()
     {
-        if (busy) return;
+        if (IsTurning) return;
         if (Mode == ViewMode.Wall)       StartCoroutine(Look(ViewMode.Ceiling));
         else if (Mode == ViewMode.Floor) StartCoroutine(Look(ViewMode.Wall));
     }
 
     public void LookDown()
     {
-        if (busy) return;
+        if (IsTurning) return;
         if (Mode == ViewMode.Wall)         StartCoroutine(Look(ViewMode.Floor));
         else if (Mode == ViewMode.Ceiling) StartCoroutine(Look(ViewMode.Wall));
     }

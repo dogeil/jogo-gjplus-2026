@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public enum Recurso { Madeira, Prego, Metal, Arame }
+public enum Recurso { Madeira, Prego, Metal, Arame, Parafuso }
 
 public class InventoryHandler : MonoBehaviour
 {
@@ -14,9 +14,11 @@ public class InventoryHandler : MonoBehaviour
 
     public static int Quantidade(Recurso recurso) => quantidades[(int)recurso];
 
+    public static void Remover(Recurso recurso, int qtd) => quantidades[(int)recurso] -= qtd;
+
     // ponytail: contador debug via OnGUI, trocar por UI/TextMeshPro quando tiver HUD
     void OnGUI()
     {
-        GUILayout.Label($"Madeira: {Quantidade(Recurso.Madeira)}  Prego: {Quantidade(Recurso.Prego)}  Metal: {Quantidade(Recurso.Metal)}  Arame: {Quantidade(Recurso.Arame)}");
+        GUILayout.Label($"Madeira: {Quantidade(Recurso.Madeira)}  Prego: {Quantidade(Recurso.Prego)}  Metal: {Quantidade(Recurso.Metal)}  Arame: {Quantidade(Recurso.Arame)}  Parafuso: {Quantidade(Recurso.Parafuso)}");
     }
 }
