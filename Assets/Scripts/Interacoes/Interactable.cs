@@ -60,7 +60,7 @@ public abstract class Interactable : MonoBehaviour
         yield return Minigame(r => ok = r);
         tool.gameObject.SetActive(true);
         if (ok) tool.Suspend(); // venceu: fica no ar até tocar nele ou olhar pro lado; falhou: cai
-        if (room != null && LockRoom) room.Locked = false;
+        if (room != null && LockRoom && !GameManager.Lost) room.Locked = false; // perdeu no meio: a tela de derrota mantém travado
         busy = AnyBusy = false;
         if (ok) OnSuccess(); else OnFail();
     }
