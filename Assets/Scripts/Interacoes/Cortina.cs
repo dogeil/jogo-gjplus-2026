@@ -59,6 +59,9 @@ public class Cortina : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         }
     }
 
+    /// Sobe a cortina sozinha até o topo (mesmo se o jogador estiver arrastando; o arrasto passa a ser ignorado).
+    public void Recolher() => rising = true;
+
     float PointerLocalY(PointerEventData e) =>
         transform.parent.InverseTransformPoint(cam.ScreenToWorldPoint(e.position)).y;
 
@@ -71,7 +74,7 @@ public class Cortina : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragH
         dragOffset = transform.localPosition.y - PointerLocalY(e);
     }
 
-    public void OnDrag(PointerEventData e) { if (dragging) SetY(PointerLocalY(e) + dragOffset); }
+    public void OnDrag(PointerEventData e) { if (dragging && !rising) SetY(PointerLocalY(e) + dragOffset); }
 
     public void OnEndDrag(PointerEventData e)
     {

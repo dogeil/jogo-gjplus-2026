@@ -62,10 +62,25 @@ public class Porta : Interactable
     protected override void OnFail()
     {
         Destroy(barricade);
-        base.OnFail();
+        DropDoorCosts();
     }
 
+    // As tábuas caem todas; os pregos, uma fração aleatória dentro de breachDropFraction.
+    void DropDoorCosts() => DropCosts(breachDropFraction.x, breachDropFraction.y, Recurso.Madeira);
+
+    [SerializeField] float anxietyOnAttack = 5f; // ansiedade a cada tentativa de arrombar
+
     bool shaking;
+    int hits = 1;
+
+    /// Inimigo forçando a porta: treme e depois causa `damage` de dano. Ignora se já está forçando.
+    public void Breach(int damage = 1)
+    {
+        if (shaking || GameManager.Lost) return;
+        Anxiety.Add(anxietyOnAttack);
+        hits = damage;
+        StartCoroutine(Shake());
+    }
 
     // Treme a porta (e a barricada, se houver) em rajadas, como alguém forçando a entrada.
     IEnumerator Shake(float duration = 2f, float amp = 0.1f)
@@ -85,7 +100,7 @@ public class Porta : Interactable
         if (barricade != null) barricade.transform.localPosition = barOrigin;
         shaking = false;
 
-        TakeDamage();
+        for (int i = 0; i < hits && !GameManager.Lost; i++) TakeDamage();
     }
 
     /// Barricada funciona como escudo de 1 dano: é consumida (some, parte dos recursos cai) e a porta não sofre.
@@ -97,7 +112,7 @@ public class Porta : Interactable
             barricaded = false;
             SecurityManager.Add(entranceId, -1);
             Destroy(barricade);
-            DropCosts(breachDropFraction.x, breachDropFraction.y);
+            DropDoorCosts();
             return;
         }
 
@@ -111,13 +126,13 @@ public class Porta : Interactable
         if (doorRenderer != null && damageSprites[state] != null) doorRenderer.sprite = damageSprites[state];
     }
 
-    void GameOver() => GameManager.Lose($"Invadiram pela {entranceId}");
+    void GameOver() => GameManager.Lose($"Invadiram pela {entranceId}", "Talvez tente barricar a porta na próxima vez?");
 
     // ponytail: debug via OnGUI, remover quando o inimigo disparar o Shake de verdade
     void OnGUI()
     {
         GUILayout.BeginArea(new Rect(10, 130, 220, 40));
-        if (!shaking && GUILayout.Button("Arrombar porta")) StartCoroutine(Shake());
+        if (!shaking && GUILayout.Button("Arrombar porta")) Breach();
         GUILayout.EndArea();
     }
 

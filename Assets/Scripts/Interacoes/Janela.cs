@@ -21,6 +21,8 @@ public class Janela : ClickInteract, IPointerEnterHandler, IPointerExitHandler
     GameObject arameOverlay;
 
     public EstadoJanela Estado => estado;
+    public bool CortinaBaixada => cortina != null && cortina.Baixada; // vale também com arame (o estado fica Arame)
+    public void RecolherCortina() { if (cortina != null) cortina.Recolher(); }
 
     void Awake()
     {

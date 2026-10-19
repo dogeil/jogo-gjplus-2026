@@ -8,7 +8,14 @@ public class Anxiety : MonoBehaviour
 
     [SerializeField] float decayPerSecond = 2f;
 
-    public static void Add(float amount) => Level = Mathf.Clamp(Level + amount, 0f, 100f);
+    /// true: ganhos de ansiedade sao ignorados (so desce). Ligado pelo PortaRetratos.
+    public static bool Soothed { get; set; }
+
+    public static void Add(float amount)
+    {
+        if (Soothed && amount > 0f) return;
+        Level = Mathf.Clamp(Level + amount, 0f, 100f);
+    }
 
     [SerializeField] Volume volume; // vazio = acha o primeiro Volume da cena
     [SerializeField] float maxVignette = 0.5f;
@@ -24,6 +31,11 @@ public class Anxiety : MonoBehaviour
     [SerializeField] float pixelationStart = 50f;
     [SerializeField] float maxPixelation = 3.5f;
     [SerializeField] float minPixelation = 0.0001f; // 0 exato pode dividir por zero no graph
+
+    [Header("Stage Objects")]
+    [SerializeField] GameObject stage1; // 0-40
+    [SerializeField] GameObject stage2; // 41-70
+    [SerializeField] GameObject stage3; // 71-100
 
     static readonly int PixelationID = Shader.PropertyToID("_Pixelation");
 
@@ -45,6 +57,10 @@ public class Anxiety : MonoBehaviour
     {
         Add(-decayPerSecond * Time.deltaTime);
         float t = Level / 100f;
+        // SetActive com mesmo estado e no-op
+        if (stage1 != null) stage1.SetActive(Level < 41f);
+        if (stage2 != null) stage2.SetActive(Level >= 41f && Level < 71f);
+        if (stage3 != null) stage3.SetActive(Level >= 71f);
         if (vignette != null) vignette.intensity.value = Mathf.Lerp(baseVignette, maxVignette, t);
         if (chromatic != null) chromatic.intensity.value = Mathf.Lerp(baseChromatic, maxChromatic, t);
         if (pixelationMaterial != null)

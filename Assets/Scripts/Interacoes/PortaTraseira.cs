@@ -16,6 +16,7 @@ public class PortaTraseira : Interactable, IPointerDownHandler, IPointerEnterHan
 
     [Header("Ataque")]
     [SerializeField] float reactionTime = 4f;   // s pra clicar na porta depois do aviso
+    [SerializeField] float anxietyOnAttack = 8f; // ansiedade a cada ataque
     [SerializeField] float shakeAmp = 0.08f;
     [SerializeField] Sprite alertSprite;        // aviso no canto; sem sprite vira um quadrado vermelho
     [SerializeField] float alertScale = 0.33f;  // escala do aviso sobre o tamanho nativo do sprite
@@ -70,7 +71,9 @@ public class PortaTraseira : Interactable, IPointerDownHandler, IPointerEnterHan
 
     public void Attack()
     {
-        if (!attacking && !AnyBusy && !GameManager.Lost) StartCoroutine(AttackRoutine());
+        if (attacking || AnyBusy || GameManager.Lost) return;
+        Anxiety.Add(anxietyOnAttack);
+        StartCoroutine(AttackRoutine());
     }
 
     IEnumerator AttackRoutine()
@@ -121,7 +124,7 @@ public class PortaTraseira : Interactable, IPointerDownHandler, IPointerEnterHan
             if (wireOverlay != null) wireOverlay.SetActive(false);
             return;
         }
-        GameManager.Lose("Invadiram pela porta de trás");
+        GameManager.Lose("Invadiram pela porta de trás", "Talvez tente reforçar a porta com arame e reagir mais rápido na próxima vez?");
     }
 
     Image MakeAlert(Transform parent)

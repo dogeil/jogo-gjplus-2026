@@ -16,6 +16,7 @@ public abstract class Interactable : MonoBehaviour
     }
 
     [SerializeField] protected Cost[] costs;
+    [SerializeField, Min(0f)] float anxietyRelief = 5f; // ansiedade removida ao vencer o minigame
 
     /// Algum minigame rodando (mesmo sem travar a sala). Outros objetos clicáveis, como a cortina, devem ignorar o mouse.
     public static bool AnyBusy { get; private set; }
@@ -62,7 +63,7 @@ public abstract class Interactable : MonoBehaviour
         if (ok) tool.Suspend(); // venceu: fica no ar até tocar nele ou olhar pro lado; falhou: cai
         if (room != null && LockRoom && !GameManager.Lost) room.Locked = false; // perdeu no meio: a tela de derrota mantém travado
         busy = AnyBusy = false;
-        if (ok) OnSuccess(); else OnFail();
+        if (ok) { Anxiety.Add(-anxietyRelief); OnSuccess(); } else OnFail();
     }
 
     protected abstract IEnumerator Minigame(Action<bool> done);
@@ -70,13 +71,16 @@ public abstract class Interactable : MonoBehaviour
     protected virtual void OnFail() => DropCosts();
 
     /// Solta no chão uma fração aleatória (entre min e max) de cada recurso do custo. Padrão: tudo.
-    protected void DropCosts(float minFraction = 1f, float maxFraction = 1f)
+    /// `alwaysAll`: esse recurso cai inteiro, sem sorteio.
+    protected void DropCosts(float minFraction = 1f, float maxFraction = 1f, Recurso? alwaysAll = null)
     {
         if (room == null) return;
         foreach (var c in costs)
         {
             if (c.dropPrefab == null) continue;
-            int amount = Mathf.RoundToInt(c.qtd * UnityEngine.Random.Range(minFraction, maxFraction));
+            int amount = c.recurso == alwaysAll
+                ? c.qtd
+                : Mathf.RoundToInt(c.qtd * UnityEngine.Random.Range(minFraction, maxFraction));
             for (int i = 0; i < amount; i++)
             {
                 var item = Instantiate(c.dropPrefab, room.GetSurface(room.FloorIndex));

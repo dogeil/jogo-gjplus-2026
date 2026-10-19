@@ -128,6 +128,7 @@ public class RoomView : MonoBehaviour
     public Transform GetSurface(int index) => surfaces[index];
     public int IndexOfSurface(Transform t) => Array.IndexOf(surfaces, t);
     public bool IsFloor(Transform surface) => surface == floor;
+    public bool IsOnFloor(Transform t) => t.IsChildOf(floor); // inclui filhos de filhos (ex.: pregos dentro da gaveta)
     public bool IsCeiling(Transform surface) => surface == ceiling;
     public bool IsFloorOrCeiling(Transform surface) => surface == floor || surface == ceiling;
 

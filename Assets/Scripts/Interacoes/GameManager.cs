@@ -13,7 +13,7 @@ public static class GameManager
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetState() => Lost = false; // statics sobrevivem sem domain reload no editor
 
-    public static void Lose(string reason)
+    public static void Lose(string reason, string hint = null)
     {
         if (Lost) return; // só a primeira derrota conta
         Lost = true;
@@ -22,30 +22,36 @@ public static class GameManager
         var room = Object.FindFirstObjectByType<RoomView>();
         if (room != null) room.Locked = true;
 
-        new GameObject("LoseScreen").AddComponent<LoseScreen>().Show(reason);
+        new GameObject("LoseScreen").AddComponent<LoseScreen>().Show(reason, hint);
+    }
+
+    /// Fim de fase com vitoria: mesma tela de fade, so o texto. Marca Lost = true so pra parar o resto do jogo
+    /// (inimigos, minigames, camera travada); nao e uma derrota.
+    public static void Win(string message)
+    {
+        if (Lost) return;
+        Lost = true;
+        Debug.Log("Fase vencida: " + message);
+
+        var room = Object.FindFirstObjectByType<RoomView>();
+        if (room != null) room.Locked = true;
+
+        new GameObject("WinScreen").AddComponent<LoseScreen>().Show(message, null);
     }
 
     class LoseScreen : MonoBehaviour
     {
-        public void Show(string reason) => StartCoroutine(Run(reason));
+        public void Show(string reason, string hint) => StartCoroutine(Run(reason, hint));
 
-        IEnumerator Run(string reason)
+        IEnumerator Run(string reason, string hint)
         {
             var canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 200;
 
             var black = Fullscreen("Black", Color.clear).GetComponent<Image>();
-            var text = new GameObject("Text", typeof(Text)).GetComponent<Text>();
-            text.transform.SetParent(transform, false);
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.text = reason;
-            text.fontSize = 48;
-            text.alignment = TextAnchor.MiddleCenter;
-            text.color = new Color(1f, 1f, 1f, 0f);
-            var rt = text.rectTransform;
-            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
-            rt.offsetMin = rt.offsetMax = Vector2.zero;
+            var text = MakeText("Text", reason, 48, 30f);
+            var sub = MakeText("Hint", hint, 28, -40f);
 
             for (float t = 0f; t < FadeTime; t += Time.unscaledDeltaTime)
             {
@@ -58,10 +64,27 @@ public static class GameManager
 
             for (float t = 0f; t < FadeTime; t += Time.unscaledDeltaTime)
             {
-                text.color = new Color(1f, 1f, 1f, t / FadeTime);
+                var c = new Color(1f, 1f, 1f, t / FadeTime);
+                text.color = sub.color = c;
                 yield return null;
             }
-            text.color = Color.white;
+            text.color = sub.color = Color.white;
+        }
+
+        // y = deslocamento vertical (px) do centro da tela
+        Text MakeText(string name, string content, int size, float y)
+        {
+            var t = new GameObject(name, typeof(Text)).GetComponent<Text>();
+            t.transform.SetParent(transform, false);
+            t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            t.text = content;
+            t.fontSize = size;
+            t.alignment = TextAnchor.MiddleCenter;
+            t.color = new Color(1f, 1f, 1f, 0f);
+            var rt = t.rectTransform;
+            rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
+            rt.offsetMin = new Vector2(0f, y); rt.offsetMax = new Vector2(0f, y);
+            return t;
         }
 
         GameObject Fullscreen(string name, Color color)

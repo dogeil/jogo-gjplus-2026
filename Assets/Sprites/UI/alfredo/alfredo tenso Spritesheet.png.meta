@@ -1,0 +1,281 @@
+fileFormatVersion: 2
+guid: 82fc4c0582b317840bda80bcd21a6680
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: -5761684460042151353
+    second: alfredo tenso Spritesheet_0
+  - first:
+      213: -3779361152175010082
+    second: alfredo tenso Spritesheet_1
+  - first:
+      213: -3047369626254466381
+    second: alfredo tenso Spritesheet_2
+  - first:
+      213: 1916463460710876585
+    second: alfredo tenso Spritesheet_3
+  - first:
+      213: 1019308228362269887
+    second: alfredo tenso Spritesheet_4
+  - first:
+      213: 6591199458602807179
+    second: alfredo tenso Spritesheet_5
+  - first:
+      213: 1848712668982535205
+    second: alfredo tenso Spritesheet_6
+  - first:
+      213: 810274753724567833
+    second: alfredo tenso Spritesheet_7
+  - first:
+      213: 4458331188707562475
+    second: alfredo tenso Spritesheet_8
+  - first:
+      213: 6029041736316095289
+    second: alfredo tenso Spritesheet_9
+  - first:
+      213: 6801348002795707907
+    second: alfredo tenso Spritesheet_10
+  - first:
+      213: -410223492509554830
+    second: alfredo tenso Spritesheet_11
+  - first:
+      213: 6476417861595188880
+    second: alfredo tenso Spritesheet_12
+  - first:
+      213: 5302021866856212234
+    second: alfredo tenso Spritesheet_13
+  - first:
+      213: 9161561753951059907
+    second: alfredo tenso Spritesheet_14
+  - first:
+      213: 3191061613026544910
+    second: alfredo tenso Spritesheet_15
+  - first:
+      213: 6932933085323874213
+    second: alfredo tenso Spritesheet_16
+  - first:
+      213: 1576033479383449799
+    second: alfredo tenso Spritesheet_17
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WindowsStoreApps
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: alfredo tenso Spritesheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 900
+        height: 900
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 74a9c43a2826a00b0800000000000000
+      internalID: -5761684460042151353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: alfredo tenso Spritesheet_1
+      rect:
+        serializedVersion: 2
+        x: 900
+        y: 0
+        width: 900
+        height: 900
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ede82b65e030d8bc0800000000000000
+      internalID: -3779361152175010082
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: alfredo tenso Spritesheet_2
+      rect:
+        serializedVersion: 2
+        x: 1800
+        y: 0
+        width: 900
+        height: 900
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3b2a9c7787195b5d0800000000000000
+      internalID: -3047369626254466381
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: ae4b2a38ac55e6f42a5779a5b8b04c70
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":3.0,"y":1.0},"gridSpriteSize":{"x":900.0,"y":900.0},"gridSpriteOffset":{"x":0.0,"y":0.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":2,"keepEmptyRects":false,"isAlternate":false}'
+    nameFileIdTable:
+      alfredo tenso Spritesheet_0: -5761684460042151353
+      alfredo tenso Spritesheet_1: -3779361152175010082
+      alfredo tenso Spritesheet_2: -3047369626254466381
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

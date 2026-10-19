@@ -105,7 +105,7 @@ public class DraggableObject : MonoBehaviour, IPointerDownHandler, IBeginDragHan
     {
         if (_rb == null || _room == null) return;
 
-        bool noGravity = _held || _room.IsFloor(transform.parent);
+        bool noGravity = _held || _room.IsOnFloor(transform);
         _rb.gravityScale = noGravity ? 0f : _defaultGravity;
 
         if (noGravity)

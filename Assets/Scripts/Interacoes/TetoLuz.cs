@@ -11,7 +11,8 @@ public class TetoLuz : MonoBehaviour
     [SerializeField] GameObject screwPrefab;      // o mesmo prefab Parafuso do chão
     [SerializeField] ParafusoTeto[] slots;        // se vazio, pega os filhos
     [SerializeField] float invasionTime = 6f;     // s entre o 4º parafuso cair e perder a fase
-    [SerializeField] float fallSpeed = 12f;       // unidades/s do parafuso cruzando a tela
+    [SerializeField] float anxietyOnDrop = 5f;    // ansiedade a cada parafuso que cai
+    [SerializeField] float fallSpeed = 12f;      // unidades/s do parafuso cruzando a tela
     [SerializeField] float centerSpread = 3f;     // o parafuso nasce a até isso (unidades) do centro da tela
     [SerializeField] Sprite alarmSprite;          // sem sprite vira um quadrado vermelho
     [SerializeField] float alarmScale = 0.33f;
@@ -54,6 +55,7 @@ public class TetoLuz : MonoBehaviour
         foreach (var s in slots) if (!s.Fallen) intact.Add(s);
         if (intact.Count == 0) return;
 
+        Anxiety.Add(anxietyOnDrop);
         intact[Random.Range(0, intact.Count)].SetFallen(true);
         StartCoroutine(Fall());
         if (intact.Count == 1) Arm(); // era o último
@@ -96,7 +98,7 @@ public class TetoLuz : MonoBehaviour
         alarm.enabled = room.Mode != ViewMode.Ceiling && (int)(Time.time / blinkInterval) % 2 == 0;
         if ((countdown -= Time.deltaTime) > 0f) return;
         Disarm();
-        GameManager.Lose("Invadiram pelo teto");
+        GameManager.Lose("Invadiram pelo teto", "Talvez tente recolocar os parafusos do teto na próxima vez?");
     }
 
     // Cai do topo da vista atual (qualquer parede) até passar da borda de baixo; aí vai pro chão.
