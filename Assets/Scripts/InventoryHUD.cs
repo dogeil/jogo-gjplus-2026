@@ -26,7 +26,7 @@ public class InventoryHUD : MonoBehaviour
         // O Rect Transform deste objeto e seu; o grid fica centralizado nele
         var root = (RectTransform)transform;
 
-        var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        var font = UIFont.Get();
         for (int i = 0; i < n; i++)
         {
             var cell = new GameObject(((Recurso)i).ToString(), typeof(RectTransform)).GetComponent<RectTransform>();

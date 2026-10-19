@@ -17,6 +17,12 @@ public class ClockTimer : MonoBehaviour
         remaining = duration;
     }
 
+    void Start()
+    {
+        if (DayManager.Instance == null) return;
+        duration = remaining = DayManager.Instance.Today.duration; // o dia manda na duração
+    }
+
     void Update()
     {
         if (GameManager.Lost) return;
@@ -29,14 +35,10 @@ public class ClockTimer : MonoBehaviour
             label.text = $"{s / 60:00}:{s % 60:00}";
         }
 
-        if (remaining <= 0f) GameManager.Win(winMessage);
-    }
-
-    // ponytail: debug via OnGUI, remover antes de entregar
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(10, 250, 220, 40));
-        if (GUILayout.Button("Tempo = 10s")) remaining = Mathf.Min(remaining, 10f);
-        GUILayout.EndArea();
+        if (remaining <= 0f)
+        {
+            if (DayManager.Instance != null) DayManager.Instance.EndDay();
+            else GameManager.Win(winMessage);
+        }
     }
 }

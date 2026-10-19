@@ -20,6 +20,7 @@ public abstract class Interactable : MonoBehaviour
 
     /// Algum minigame rodando (mesmo sem travar a sala). Outros objetos clicáveis, como a cortina, devem ignorar o mouse.
     public static bool AnyBusy { get; private set; }
+    public static void ResetBusy() => AnyBusy = false; // recarregar a cena mata o minigame no meio
 
     protected RoomView room;
     bool busy;

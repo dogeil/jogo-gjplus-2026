@@ -13,7 +13,10 @@ public static class GameManager
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void ResetState() => Lost = false; // statics sobrevivem sem domain reload no editor
 
-    public static void Lose(string reason, string hint = null)
+    public static void Reset() => Lost = false;
+
+    /// Derrota: fade pra preto, texto e um botão (padrão: reiniciar o dia atual).
+    public static void Lose(string reason, string hint = null, string buttonLabel = "Reiniciar dia", System.Action onButton = null)
     {
         if (Lost) return; // só a primeira derrota conta
         Lost = true;
@@ -22,12 +25,13 @@ public static class GameManager
         var room = Object.FindFirstObjectByType<RoomView>();
         if (room != null) room.Locked = true;
 
-        new GameObject("LoseScreen").AddComponent<LoseScreen>().Show(reason, hint);
+        new GameObject("LoseScreen").AddComponent<LoseScreen>()
+            .Show(reason, hint, buttonLabel, onButton ?? (() => DayManager.Reload(DayManager.Day)), null);
     }
 
-    /// Fim de fase com vitoria: mesma tela de fade, so o texto. Marca Lost = true so pra parar o resto do jogo
+    /// Fim de fase com vitoria: mesma tela de fade, so o texto; depois chama onDone. Marca Lost = true so pra parar o resto do jogo
     /// (inimigos, minigames, camera travada); nao e uma derrota.
-    public static void Win(string message)
+    public static void Win(string message, System.Action onDone = null)
     {
         if (Lost) return;
         Lost = true;
@@ -36,18 +40,22 @@ public static class GameManager
         var room = Object.FindFirstObjectByType<RoomView>();
         if (room != null) room.Locked = true;
 
-        new GameObject("WinScreen").AddComponent<LoseScreen>().Show(message, null);
+        new GameObject("WinScreen").AddComponent<LoseScreen>().Show(message, null, null, null, onDone);
     }
 
     class LoseScreen : MonoBehaviour
     {
-        public void Show(string reason, string hint) => StartCoroutine(Run(reason, hint));
+        const float WinHold = 2f; // texto de vitória na tela antes de ir pro próximo dia
 
-        IEnumerator Run(string reason, string hint)
+        public void Show(string reason, string hint, string label, System.Action onButton, System.Action onDone) =>
+            StartCoroutine(Run(reason, hint, label, onButton, onDone));
+
+        IEnumerator Run(string reason, string hint, string label, System.Action onButton, System.Action onDone)
         {
             var canvas = gameObject.AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             canvas.sortingOrder = 200;
+            gameObject.AddComponent<GraphicRaycaster>(); // pro botão
 
             var black = Fullscreen("Black", Color.clear).GetComponent<Image>();
             var text = MakeText("Text", reason, 48, 30f);
@@ -69,6 +77,30 @@ public static class GameManager
                 yield return null;
             }
             text.color = sub.color = Color.white;
+
+            if (onDone != null)
+            {
+                yield return new WaitForSecondsRealtime(WinHold);
+                onDone();
+            }
+            else if (label != null) MakeButton(label, onButton);
+        }
+
+        void MakeButton(string label, System.Action onClick)
+        {
+            var img = new GameObject("Button", typeof(Image), typeof(Button)).GetComponent<Image>();
+            img.transform.SetParent(transform, false);
+            img.color = new Color(1f, 1f, 1f, 0.15f);
+            var rt = img.rectTransform;
+            rt.anchorMin = rt.anchorMax = rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(320f, 70f);
+            rt.anchoredPosition = new Vector2(0f, -150f);
+            img.GetComponent<Button>().onClick.AddListener(() => onClick());
+
+            var t = MakeText("Label", label, 32, 0f);
+            t.transform.SetParent(rt, false);
+            t.color = Color.white;
+            t.raycastTarget = false;
         }
 
         // y = deslocamento vertical (px) do centro da tela
@@ -76,7 +108,7 @@ public static class GameManager
         {
             var t = new GameObject(name, typeof(Text)).GetComponent<Text>();
             t.transform.SetParent(transform, false);
-            t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            t.font = UIFont.Get();
             t.text = content;
             t.fontSize = size;
             t.alignment = TextAnchor.MiddleCenter;

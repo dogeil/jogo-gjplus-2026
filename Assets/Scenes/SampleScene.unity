@@ -2669,7 +2669,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HintPopup
   hintButton: {fileID: 569510203}
-  hintText: Dica aqui.
+  hintText: "Se voc\xEA quer amanhecer vivo em Corpuz, preste aten\xE7\xE3o: Se voc\xEA
+    quer algo bem feito, fa\xE7a voc\xEA mesmo. Use as pr\xF3prias m\xE3os para tudo
+    \u2014 agarre firme o que encontrar (clique e segure) e leve diretamente at\xE9
+    onde precisa usar (arraste com o mouse).\r\nAo ouvir batidas, leve t\xE1buas
+    e pregos at\xE9 a porta principal para tranc\xE1-la. Se precisar de tempo, prenda
+    o arame l\xE1 para um bloqueio autom\xE1tico, mas lembre-se de que ele arrebenta
+    depois de segurar o primeiro ataque. E quando suas barricadas quebrarem, olhe
+    para baixo; recolha os destro\xE7os do ch\xE3o, pois qualquer peda\xE7o de madeira
+    pode salvar sua pele de novo.\r\nFique esperto: mantenha as cortinas fechadas
+    para a silhueta l\xE1 fora n\xE3o te ver. Se ouvir passos apressados, corra para
+    proteger a porta traseira. Viu tent\xE1culos rastejando na sua dire\xE7\xE3o?
+    Pegue o martelo e leve at\xE9 eles para esmag\xE1-los (dizem que d\xE3o um \xF3timo
+    ensopado). Por fim, quando perceberem que est\xE1 tudo trancado, o desespero
+    vai fazer eles virem por cima. Cuidado com a cabe\xE7a e, se a luz falhar, puxe
+    a parafusadeira rapidamente para o conserto. Boa sorte."
   fontSize: 40
   dimColor: {r: 0, g: 0, b: 0, a: 0.7}
   panelColor: {r: 0.08, g: 0.08, b: 0.08, a: 0.95}
@@ -4599,6 +4613,87 @@ Transform:
   m_Children:
   - {fileID: 1584225619}
   m_Father: {fileID: 810705453}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &934410537
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 934410539}
+  - component: {fileID: 934410538}
+  m_Layer: 0
+  m_Name: DayManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &934410538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934410537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b692c7837ba050b44aed4df2e32215ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DayManager
+  days:
+  - duration: 120
+    speed: 1
+    backDoor: 0
+    bothWindows: 0
+    ceiling: 0
+    tentacles: 0
+  - duration: 180
+    speed: 1.5
+    backDoor: 1
+    bothWindows: 0
+    ceiling: 0
+    tentacles: 0
+  - duration: 210
+    speed: 2
+    backDoor: 1
+    bothWindows: 1
+    ceiling: 1
+    tentacles: 1
+  - duration: 240
+    speed: 2.5
+    backDoor: 1
+    bothWindows: 1
+    ceiling: 1
+    tentacles: 1
+  - duration: 280
+    speed: 5
+    backDoor: 1
+    bothWindows: 1
+    ceiling: 1
+    tentacles: 1
+  speedScale: 0.5
+  startDay: 1
+  dayWinMessage: "Voc\xEA sobreviveu ao dia {0}!"
+  finalMessage: Eles entraram.
+  finalHint: "N\xE3o havia como segurar at\xE9 o fim."
+  menuScene: Menu
+--- !u!4 &934410539
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 934410537}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1456.4922, y: 804.81647, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &935203856
 GameObject:
@@ -6977,8 +7072,14 @@ MonoBehaviour:
     - {fileID: 463690769435328438, guid: 2eda0b165e1c30142ad4fff46497fdd5, type: 3}
     - {fileID: -7040687885063065385, guid: c7096721e270bfb449a207b41f924b24, type: 3}
     floorSprite: {fileID: 3069293184181078631, guid: 115ff3c209fc53f459278d641ec9edaf, type: 3}
+  ceiling:
+    enabled: 1
+    interval:
+      min: 45
+      max: 80
   frontDoor: {fileID: 830348368}
   rearDoor: {fileID: 1674147115}
+  ceilingLight: {fileID: 0}
   leftWindow: {fileID: 133228290}
   rightWindow: {fileID: 1611000380}
 --- !u!1 &1766224458
@@ -6993,7 +7094,7 @@ GameObject:
   - component: {fileID: 1766224461}
   - component: {fileID: 1766224460}
   m_Layer: 5
-  m_Name: Portrait (1)
+  m_Name: Hint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7905,3 +8006,4 @@ SceneRoots:
   - {fileID: 759865796}
   - {fileID: 1019325587}
   - {fileID: 1720047704}
+  - {fileID: 934410539}

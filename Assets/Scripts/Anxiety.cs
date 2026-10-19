@@ -11,6 +11,8 @@ public class Anxiety : MonoBehaviour
     /// true: ganhos de ansiedade sao ignorados (so desce). Ligado pelo PortaRetratos.
     public static bool Soothed { get; set; }
 
+    public static void ResetAll() { Level = 0f; Soothed = false; }
+
     public static void Add(float amount)
     {
         if (Soothed && amount > 0f) return;
@@ -80,17 +82,5 @@ public class Anxiety : MonoBehaviour
         float s = Mathf.InverseLerp(shakeThreshold, 100f, Level);
         float noise = Mathf.PerlinNoise(Time.time * shakeSpeed, 0f) * 2f - 1f;
         Camera.main.transform.rotation = Quaternion.Euler(0f, 0f, noise * s * maxShakeAngle);
-    }
-
-    // ponytail: debug via OnGUI, trocar por barra UI + remover botoes quando tiver HUD
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(10, 40, 220, 80));
-        GUILayout.Label($"Ansiedade: {Mathf.RoundToInt(Level)} / 100");
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("-10")) Add(-10f);
-        if (GUILayout.Button("+10")) Add(10f);
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
     }
 }

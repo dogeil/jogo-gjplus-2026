@@ -25,6 +25,8 @@ public class InventoryHandler : MonoBehaviour
         Debug.Log(recurso + ": " + quantidades[(int)recurso]);
     }
 
+    public static void Reset() => System.Array.Clear(quantidades, 0, quantidades.Length);
+
     public static int Quantidade(Recurso recurso) => quantidades[(int)recurso];
 
     public static void Remover(Recurso recurso, int qtd) => quantidades[(int)recurso] -= qtd;

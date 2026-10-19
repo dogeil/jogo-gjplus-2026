@@ -8,6 +8,8 @@ public static class SecurityManager
 
     public static event Action<string, int> OnLevelChanged; // entrada, novo nível
 
+    public static void Reset() => levels.Clear();
+
     public static int Level(string entrance) => levels.TryGetValue(entrance, out var l) ? l : 0;
 
     public static int Total()

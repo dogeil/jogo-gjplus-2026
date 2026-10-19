@@ -128,14 +128,6 @@ public class Porta : Interactable
 
     void GameOver() => GameManager.Lose($"Invadiram pela {entranceId}", "Talvez tente barricar a porta na próxima vez?");
 
-    // ponytail: debug via OnGUI, remover quando o inimigo disparar o Shake de verdade
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(10, 130, 220, 40));
-        if (!shaking && GUILayout.Button("Arrombar porta")) Breach();
-        GUILayout.EndArea();
-    }
-
     // Selecione a porta na cena: mostra os pregos (a barricada nasce no pivô da porta, então bate com o jogo).
     void OnDrawGizmosSelected()
     {

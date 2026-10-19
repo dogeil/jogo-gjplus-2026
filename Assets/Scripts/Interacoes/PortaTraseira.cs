@@ -157,12 +157,4 @@ public class PortaTraseira : Interactable, IPointerDownHandler, IPointerEnterHan
 
     public void OnPointerEnter(PointerEventData e) => hover = true;
     public void OnPointerExit(PointerEventData e) => hover = false;
-
-    // ponytail: debug via OnGUI, remover quando o inimigo disparar Attack() de verdade
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(10, 170, 220, 40));
-        if (!attacking && GUILayout.Button("Atacar porta traseira")) Attack();
-        GUILayout.EndArea();
-    }
 }

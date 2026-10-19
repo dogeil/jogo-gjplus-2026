@@ -132,13 +132,15 @@ public class RoomView : MonoBehaviour
     public bool IsCeiling(Transform surface) => surface == ceiling;
     public bool IsFloorOrCeiling(Transform surface) => surface == floor || surface == ceiling;
 
-    /// Item caiu do teto: reparenta no chão em ponto aleatório.
+    const float HudFraction = 0.4f; // parte de baixo da tela coberta pelo HUD: nada cai ali
+
+    /// Item caiu do teto: reparenta no chão em ponto aleatório, fora da faixa de baixo coberta pelo HUD.
     public void DropOnFloor(Transform item, float margin = 1f)
     {
         item.SetParent(floor, false);
         item.localPosition = new Vector3(
             UnityEngine.Random.Range(-wallWidth / 2f + margin, wallWidth / 2f - margin),
-            UnityEngine.Random.Range(-viewHeight / 2f + margin, viewHeight / 2f - margin),
+            UnityEngine.Random.Range(-viewHeight / 2f + viewHeight * HudFraction + margin, viewHeight / 2f - margin),
             item.localPosition.z);
         Physics2D.SyncTransforms();
     }

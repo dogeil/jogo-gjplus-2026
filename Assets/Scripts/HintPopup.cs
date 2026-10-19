@@ -75,7 +75,7 @@ public class HintPopup : MonoBehaviour
         var text = new GameObject("Text", typeof(Text)).GetComponent<Text>();
         Stretch(text.rectTransform, panel, 0.04f);
         text.raycastTarget = false;
-        text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        text.font = UIFont.Get();
         text.fontSize = fontSize;
         text.alignment = TextAnchor.UpperLeft;
         text.color = Color.white;

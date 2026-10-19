@@ -53,16 +53,26 @@ public class EnemyManager : MonoBehaviour
         [Tooltip("Aparece no chão quando algum tentáculo chega ao nível máximo")] public Sprite floorSprite;
     }
 
+    [Serializable]
+    public class CeilingScrews
+    {
+        public bool enabled = true;
+        [Tooltip("Tempo entre quedas de parafuso do teto")] public Interval interval = new Interval { min = 45f, max = 80f };
+    }
+
     public DoorBreaker doorBreaker;
     public BackDoorRunner backDoor;
     public WindowGhost windowGhost;
     public Tentacles tentacles;
+    public CeilingScrews ceiling;
 
     [Header("Alvos (vazio = acha na cena)")]
     [SerializeField] Porta frontDoor;
     [SerializeField] PortaTraseira rearDoor;
 
     public static EnemyManager Instance { get; private set; }
+
+    [SerializeField] TetoLuz ceilingLight;
 
     [SerializeField] Janela leftWindow;  // vazios = acha pela parede (nome com "esq" / "dir")
     [SerializeField] Janela rightWindow;
@@ -78,7 +88,11 @@ public class EnemyManager : MonoBehaviour
         public bool Present => sprite != null;
     }
 
-    float nextBreak, nextRun, nextTentacle, nextGhost;
+    // Vêm do DayManager: ritmo (intervalos dividem por isso) e vulto na janela esquerda
+    float speed = 1f;
+    bool leftGhost = true;
+
+    float nextBreak, nextRun, nextTentacle, nextGhost, nextScrew;
     RoomView room;
     GhostSlot left, right;
     GhostSlot[] ghosts;
@@ -89,6 +103,8 @@ public class EnemyManager : MonoBehaviour
     {
         if (frontDoor == null) frontDoor = FindFirstObjectByType<Porta>();
         if (rearDoor == null) rearDoor = FindFirstObjectByType<PortaTraseira>();
+        if (ceilingLight == null) ceilingLight = FindFirstObjectByType<TetoLuz>();
+        if (DayManager.Instance != null) Apply(DayManager.Instance.Today);
         room = FindFirstObjectByType<RoomView>();
         foreach (var w in FindObjectsByType<Janela>(FindObjectsSortMode.None))
         {
@@ -102,11 +118,24 @@ public class EnemyManager : MonoBehaviour
         right = MakeSlot(rightWindow);
         ghosts = new[] { left, right };
 
-        nextBreak = Time.time + doorBreaker.interval.Roll();
-        nextRun = Time.time + backDoor.interval.Roll();
-        nextTentacle = Time.time + tentacles.spawnInterval.Roll();
-        nextGhost = Time.time + windowGhost.interval.Roll();
+        nextBreak = Next(doorBreaker.interval);
+        nextRun = Next(backDoor.interval);
+        nextTentacle = Next(tentacles.spawnInterval);
+        nextGhost = Next(windowGhost.interval);
+        nextScrew = Next(ceiling.interval);
     }
+
+    void Apply(DayManager.DayConfig d)
+    {
+        speed = d.speed * DayManager.Instance.speedScale;
+        backDoor.enabled = d.backDoor;
+        leftGhost = d.bothWindows;
+        ceiling.enabled = d.ceiling;
+        tentacles.enabled = d.tentacles;
+        tentacles.growTime /= speed;
+    }
+
+    float Next(Interval i) => Time.time + i.Roll() / speed;
 
     GhostSlot MakeSlot(Janela w) => new GhostSlot { window = w, wall = w != null ? WallOf(w) : -1 };
 
@@ -129,9 +158,9 @@ public class EnemyManager : MonoBehaviour
         {
             var free = new System.Collections.Generic.List<GhostSlot>();
             foreach (var g in ghosts)
-                if (Usable(g) && !g.Present && !g.waiting && g.window.Estado != EstadoJanela.Arame) free.Add(g);
+                if (Usable(g) && (g != left || leftGhost) && !g.Present && !g.waiting && g.window.Estado != EstadoJanela.Arame) free.Add(g);
             if (free.Count > 0) free[UnityEngine.Random.Range(0, free.Count)].waiting = true;
-            nextGhost = Time.time + windowGhost.interval.Roll();
+            nextGhost = Next(windowGhost.interval);
         }
 
         foreach (var g in ghosts)
@@ -176,14 +205,20 @@ public class EnemyManager : MonoBehaviour
         if (doorBreaker.enabled && frontDoor != null && Time.time >= nextBreak)
         {
             frontDoor.Breach(doorBreaker.damage);
-            nextBreak = Time.time + doorBreaker.interval.Roll();
+            nextBreak = Next(doorBreaker.interval);
         }
 
         // Attack() se recusa durante outro minigame/ataque; nesse caso só sorteia de novo
         if (backDoor.enabled && rearDoor != null && Time.time >= nextRun)
         {
             rearDoor.Attack();
-            nextRun = Time.time + backDoor.interval.Roll();
+            nextRun = Next(backDoor.interval);
+        }
+
+        if (ceiling.enabled && ceilingLight != null && Time.time >= nextScrew)
+        {
+            ceilingLight.DropScrew();
+            nextScrew = Next(ceiling.interval);
         }
 
         UpdateGhosts();
@@ -192,26 +227,8 @@ public class EnemyManager : MonoBehaviour
         if (Time.time >= nextTentacle)
         {
             Tentacle.SpawnRandom();
-            nextTentacle = Time.time + tentacles.spawnInterval.Roll();
+            nextTentacle = Next(tentacles.spawnInterval);
         }
         if (Tentacle.MaxSource != null) Anxiety.Add(tentacles.anxietyPerSecond * Time.deltaTime); // encostou no jogador
-    }
-
-    // Aparece assim que a parede sair da tela (e sem arame)
-    void Request(GhostSlot g)
-    {
-        if (g != null && Usable(g) && !g.Present) g.waiting = true;
-    }
-
-    // ponytail: debug via OnGUI, remover quando o ritmo do jogo estiver ajustado
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(10, 250, 220, 80));
-        if (GUILayout.Button("Surgir tentáculo")) Tentacle.SpawnRandom();
-        GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Vulto esquerda")) Request(left);
-        if (GUILayout.Button("Vulto direita")) Request(right);
-        GUILayout.EndHorizontal();
-        GUILayout.EndArea();
     }
 }

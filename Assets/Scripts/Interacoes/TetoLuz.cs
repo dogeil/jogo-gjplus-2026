@@ -40,13 +40,6 @@ public class TetoLuz : MonoBehaviour
         if (slots == null || slots.Length == 0) slots = GetComponentsInChildren<ParafusoTeto>();
     }
 
-    int FallenCount()
-    {
-        int n = 0;
-        foreach (var s in slots) if (s.Fallen) n++;
-        return n;
-    }
-
     /// Derruba um parafuso aleatório que ainda está no lugar.
     public void DropScrew()
     {
@@ -135,13 +128,5 @@ public class TetoLuz : MonoBehaviour
             rb.angularVelocity = 0f;
             rb.simulated = true;
         }
-    }
-
-    // ponytail: debug via OnGUI, trocar por queda aleatória no tempo quando o ritmo do jogo existir
-    void OnGUI()
-    {
-        GUILayout.BeginArea(new Rect(10, 210, 220, 40));
-        if (GUILayout.Button($"Soltar parafuso ({FallenCount()}/{slots.Length})")) DropScrew();
-        GUILayout.EndArea();
     }
 }
